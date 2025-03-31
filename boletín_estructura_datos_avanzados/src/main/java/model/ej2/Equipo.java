@@ -1,7 +1,12 @@
 package main.java.model.ej2;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Equipo {
 	private String nombre;
@@ -55,8 +60,117 @@ public class Equipo {
 		return equipoUnido;
 	}
 
-	public Equipo interseccionDeEquipos() {
+	public Equipo interseccionDeEquipos(Equipo equipoAUnir) {
+		Equipo equipoInter = new Equipo(this.getNombre() + equipoAUnir.getNombre());
 		
+		for(Alumno alumno : this.alumnos) {
+			if(equipoAUnir.alumnos.contains(alumno)) {
+				equipoInter.alumnos.add(alumno);
+			}
+		}
+		
+		return equipoInter;
+	}
+	
+	public List<Alumno> listarJugadoresMasculinos(){
+		List<Alumno> listaMasculinos = new ArrayList<Alumno>();
+		
+		for(Alumno alumno : this.alumnos) {
+			if(alumno.getSexo() == 'H' && alumno.getEdad() >= 18) {
+				listaMasculinos.add(alumno);
+			}
+		}
+		
+		listaMasculinos.sort(Comparator.comparingInt(Alumno::getEdad));
+		
+		return listaMasculinos;
+	}
+	
+	public boolean esEquipoFemenino() {
+		boolean resultado = true;
+		
+		for(Alumno alumno : this.alumnos) {
+			if(alumno.getSexo() == 'H') {
+				resultado = false;
+			}
+		}
+		
+		return resultado;
+	}
+	
+	public int contarJugadoresMayoresDeEdad() {
+		int cont = 0;
+		
+		for(Alumno alumno : this.alumnos) {
+			if(alumno.getEdad() >= 18) {
+				cont++;
+			}
+		}
+		
+		//return (int) this.alumnos.stream().filter(alumno -> alumno.getEdad() >= 18).count();
+		
+		return cont;
+	}
+	
+	public OptionalInt menorEdadJugadoraMayorDeEdad() {
+		return this.alumnos.stream()
+		.filter(alumno -> alumno.getEdad() >= 18)
+		.filter(alumno -> alumno.getSexo() == 'M')
+        .mapToInt(Alumno::getEdad)
+        .min();
+	}
+	
+	public Set<String> dniMasculinosMenores() {
+		Set<String> dnis = new HashSet<String>();
+		
+		for(Alumno alumno : this.alumnos) {
+			if(alumno.getSexo() == 'H' && alumno.getEdad() < 18) {
+				dnis.add(alumno.getDni());
+			}
+		}
+		
+	    /*return this.alumnos.stream()
+	            .filter(alumno -> alumno.getSexo() == 'H' && alumno.getEdad() < 18)
+	            .map(Alumno::getDni)
+	            .collect(Collectors.toSet());*/
+		
+		return dnis;
+	}
+	
+	public List<String> nombresJugadorasAlfabeticamente() {
+		return this.alumnos.stream()
+				.filter(alumno -> alumno.getSexo() == 'M')
+				.map(Alumno::getNombre)
+				.sorted()
+				.collect(Collectors.toList());
+	}
+	
+	public boolean hayJugadoraMayor() {
+		boolean resultado = false;
+		
+		for(Alumno alumno : this.alumnos) {
+			if(alumno.getSexo() == 'M' && alumno.getEdad() >= 18) {
+				resultado = true;
+			}
+		}
+		
+		return resultado;
+	}
+	
+	public int contarCiudadesDiferntes() {
+		List<String> ciudades = new ArrayList<String>();
+		//Set<String> ciudades = new HashSet<>();
+		
+		for(Alumno alumno : this.alumnos) {
+			if(!ciudades.contains(alumno.getCiudad())) {
+				ciudades.add(alumno.getCiudad());
+			}
+		}
+	    /*for (Alumno alumno : this.alumnos) {
+	        ciudades.add(alumno.getCiudad());
+	    }*/
+		
+		return ciudades.size();
 	}
 	
 	
@@ -75,31 +189,4 @@ public class Equipo {
 	public void setAlumnos(List<Alumno> alumnos) {
 		this.alumnos = alumnos;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
